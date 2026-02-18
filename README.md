@@ -40,7 +40,7 @@ streamlit run app.py
 
 ```
 travel-packing-list/
-├── travel_packing_streamlit.py  # Main Streamlit app
+├── app.py                       # Main Streamlit app
 ├── requirements.txt             # Python dependencies
 └── README.md                    # Project guide
 ```

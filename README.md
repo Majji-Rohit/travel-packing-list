@@ -45,10 +45,6 @@ travel-packing-list/
 └── README.md                    # Project guide
 ```
 
-## ✨ Screenshot
-
-![screenshot](https://dummyimage.com/800x400/ededed/333&text=Packing+List+App+Screenshot)
-
 ## 📌 Future Improvements
 
 - Export to PDF

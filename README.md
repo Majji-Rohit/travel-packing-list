@@ -1,5 +1,5 @@
 
-# 🧳 Travel Packing List Generator (Streamlit App)
+# Travel Packing List Web Application
 
 This is a simple and interactive **packing list generator** built using **Python + Streamlit**. Just enter your destination, duration, weather, and trip type — and get a customized travel packing checklist instantly.
 

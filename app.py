@@ -1,18 +1,9 @@
 import streamlit as st
 
-# Page configuration
-st.set_page_config(
-    page_title="Travel Packing List Generator",
-    page_icon="🧳",
-    layout="centered"
-)
-
-# Title
-st.title("🧳 Travel Packing List Generator")
-st.markdown("Plan smarter, pack lighter. Generate a customized packing checklist based on your trip details.")
-
-# Function to generate packing list
-def generate_packing_list(destination, days, weather, trip_type):
+# -----------------------------
+# Function to Generate Packing List
+# -----------------------------
+def generate_packing_list(days, weather, trip_type):
 
     essentials = [
         "🪪 Passport / ID",
@@ -25,116 +16,81 @@ def generate_packing_list(destination, days, weather, trip_type):
     ]
 
     clothing = []
-
     if weather == "Cold":
-        clothing.extend([
-            "🧥 Jacket",
-            "🧣 Thermal Wear",
-            "🧦 Woolen Socks",
-            "🧤 Gloves"
-        ])
-
+        clothing += ["🧥 Jacket", "🧤 Gloves", "🧦 Woolen Socks"]
     elif weather == "Hot":
-        clothing.extend([
-            "👕 T-Shirts",
-            "🩳 Shorts",
-            "🧢 Cap",
-            "😎 Sunglasses"
-        ])
-
+        clothing += ["👕 T-Shirts", "🩳 Shorts", "🧢 Cap"]
     elif weather == "Rainy":
-        clothing.extend([
-            "☔ Umbrella",
-            "🧥 Raincoat",
-            "🥾 Waterproof Shoes"
-        ])
+        clothing += ["☔ Umbrella", "🧥 Raincoat", "🥾 Waterproof Shoes"]
 
     gear = []
-
     if trip_type == "Business":
-        gear.extend([
-            "👔 Formal Wear",
-            "💼 Laptop",
-            "📝 Notepad",
-            "🪪 Business Cards"
-        ])
-
+        gear += ["💼 Laptop", "👔 Formal Wear"]
     elif trip_type == "Vacation":
-        gear.extend([
-            "📷 Camera",
-            "🎧 Headphones",
-            "📖 Book / Kindle",
-            "🍪 Snacks"
-        ])
-
+        gear += ["📷 Camera", "🎧 Headphones"]
     elif trip_type == "Adventure":
-        gear.extend([
-            "🥾 Hiking Boots",
-            "🩹 First-Aid Kit",
-            "🚰 Water Bottle",
-            "🔦 Torch",
-            "🍫 Energy Bars"
-        ])
+        gear += ["🥾 Hiking Boots", "🩹 First Aid Kit"]
 
-    daily_items = [
-        f"👕 Tops x {days}",
-        f"👖 Bottoms x {days}",
-        f"🧦 Socks x {days}",
-        f"👚 Innerwear x {days}"
-    ]
+    daily_items = [f"👕 Clothes x {days}", f"🧦 Socks x {days}"]
 
-    return essentials, clothing, gear, daily_items
+    return essentials + clothing + gear + daily_items
 
 
-# Form
+# -----------------------------
+# Page Setup
+# -----------------------------
+st.set_page_config(page_title="Travel Packing List Generator", page_icon="🧳")
+st.title("🧳 Travel Packing List Generator")
+st.markdown("Generate and customize your travel packing checklist.")
+
+# -----------------------------
+# Input Form
+# -----------------------------
 with st.form("trip_form"):
-    destination = st.text_input("Destination", placeholder="e.g. Manali, Paris")
+    destination = st.text_input("Destination")
     days = st.number_input("Trip Duration (Days)", min_value=1, max_value=60, value=3)
     weather = st.selectbox("Weather", ["Hot", "Cold", "Rainy"])
     trip_type = st.selectbox("Trip Type", ["Vacation", "Business", "Adventure"])
-
     submitted = st.form_submit_button("Generate Packing List")
 
-# When user submits
+# -----------------------------
+# Generate List
+# -----------------------------
 if submitted:
 
     if destination.strip() == "":
         st.error("Please enter a destination.")
     else:
-        st.success(f"Packing list for {destination} ({days} days | {weather} | {trip_type})")
+        st.success(f"Packing list for {destination}")
 
-        essentials, clothing, gear, daily_items = generate_packing_list(
-            destination, days, weather, trip_type
-        )
+        items = generate_packing_list(days, weather, trip_type)
 
-        st.markdown("### 🧰 Essentials")
-        for item in essentials:
-            st.checkbox(item)
+        # Select All Option (default True)
+        select_all = st.checkbox("✅ Select All Items", value=True)
 
-        st.markdown("### 👕 Clothing")
-        for item in clothing:
-            st.checkbox(item)
+        selected_items = []
 
-        if gear:
-            st.markdown(f"### 🎒 {trip_type} Gear")
-            for item in gear:
-                st.checkbox(item)
+        st.markdown("### 📦 Your Packing Items")
 
-        st.markdown("### 📅 Per-Day Clothing")
-        for item in daily_items:
-            st.checkbox(item)
+        for i, item in enumerate(items):
+            checked = st.checkbox(item, value=select_all, key=f"item_{i}")
+            if checked:
+                selected_items.append(item)
+
+        # -----------------------------
+        # Download Button
+        # -----------------------------
+        if selected_items:
+            download_text = "\n".join(selected_items)
+
+            st.download_button(
+                label="📥 Download Selected Items",
+                data=download_text,
+                file_name="packing_list.txt",
+                mime="text/plain"
+            )
+        else:
+            st.warning("No items selected to download.")
 
         st.markdown("---")
-
-        # Download feature
-        full_list = essentials + clothing + gear + daily_items
-        text_output = "\n".join(full_list)
-
-        st.download_button(
-            label="📄 Download Packing List",
-            data=text_output,
-            file_name=f"{destination}_packing_list.txt",
-            mime="text/plain"
-        )
-
-        st.info("💡 Tip: Roll clothes to save space and reduce wrinkles.")
+        st.info("Tip: Select only items you actually own or want to carry.")

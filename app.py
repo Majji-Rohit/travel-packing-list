@@ -1,67 +1,89 @@
-
 import streamlit as st
+
 
 def generate_packing_list(destination, days, weather, trip_type):
     essentials = [
-        "🪪 Passport/ID", "📱 Phone & Charger", "💳 Wallet", "🪥 Toothbrush", 
-        "🧴 Shampoo", "🧴 Sunscreen", "🧼 Deodorant", "🪞 Comb", "🔋 Power Bank"
+        "Passport/ID",
+        "Phone & Charger",
+        "Wallet",
+        "Toothbrush",
+        "Shampoo",
+        "Sunscreen",
+        "Deodorant",
+        "Comb",
+        "Power Bank"
     ]
 
     clothing = []
     if weather == "Cold":
-        clothing += ["🧤 Gloves", "🧥 Jacket", "🧦 Woolen Socks", "🧣 Thermal Wear"]
+        clothing.extend(["Gloves", "Jacket", "Woolen Socks", "Thermal Wear"])
     elif weather == "Hot":
-        clothing += ["🧢 Cap", "😎 Sunglasses", "👕 T-Shirts", "🩳 Shorts"]
+        clothing.extend(["Cap", "Sunglasses", "T-Shirts", "Shorts"])
     elif weather == "Rainy":
-        clothing += ["☔ Umbrella", "🧥 Raincoat", "🥾 Waterproof Shoes"]
+        clothing.extend(["Umbrella", "Raincoat", "Waterproof Shoes"])
 
     gear = []
     if trip_type == "Business":
-        gear += ["👔 Formal Shirt", "💼 Laptop", "📝 Notepad", "🪪 Business Cards"]
+        gear.extend(["Formal Shirt", "Laptop", "Notepad", "Business Cards"])
     elif trip_type == "Vacation":
-        gear += ["📷 Camera", "🎧 Headphones", "📖 Book/Kindle", "🍪 Snacks"]
+        gear.extend(["Camera", "Headphones", "Book/Kindle", "Snacks"])
     elif trip_type == "Adventure":
-        gear += ["🥾 Hiking Boots", "🩹 First-Aid Kit", "🚰 Water Bottle", "🔦 Torch", "🍫 Energy Bars"]
+        gear.extend([
+            "Hiking Boots",
+            "First-Aid Kit",
+            "Water Bottle",
+            "Torch",
+            "Energy Bars"
+        ])
 
-    daily_items = ["👚 Underwear", "🧦 Socks", "👕 Tops", "👖 Pants"]
+    daily_items = ["Underwear", "Socks", "Tops", "Pants"]
     per_day = [f"{item} x {days}" for item in daily_items]
 
-    full_list = essentials + clothing + gear + per_day
-    unique_list = list(set(full_list))  # Remove duplicates
-    return essentials, clothing, gear, per_day, unique_list
+    return essentials, clothing, gear, per_day
 
-st.set_page_config(page_title="Travel Packing List Generator", page_icon="🧳")
-st.title("🧳 Travel Packing List Generator")
-st.markdown("Plan smarter, pack lighter. Enter your trip details below:")
+
+# ------------------ Streamlit UI ------------------
+
+st.set_page_config(
+    page_title="Travel Packing List",
+    page_icon="🧳",
+    layout="centered"
+)
+
+st.title("Travel Packing List Generator")
+st.write("Generate a customized packing checklist based on your trip details.")
 
 with st.form("trip_form"):
-    destination = st.text_input("Destination", placeholder="e.g. Manali, Paris")
-    days = st.number_input("Trip Duration (in Days)", min_value=1, max_value=60, value=5)
+    destination = st.text_input("Destination", placeholder="e.g., Manali, Paris")
+    days = st.number_input("Trip Duration (Days)", min_value=1, max_value=60, value=5)
     weather = st.selectbox("Weather", ["Hot", "Cold", "Rainy"])
     trip_type = st.selectbox("Trip Type", ["Vacation", "Business", "Adventure"])
     submitted = st.form_submit_button("Generate Packing List")
 
 if submitted:
-    st.success(f"Packing list for {destination} ({days} days, {weather} weather, {trip_type} trip):")
+    st.success(f"Packing list for {destination} ({days} days)")
 
-    essentials, clothing, gear, per_day, _ = generate_packing_list(destination, days, weather, trip_type)
+    essentials, clothing, gear, per_day = generate_packing_list(
+        destination, days, weather, trip_type
+    )
 
-    st.markdown("### 🧰 Essentials")
+    st.subheader("Essentials")
     for item in essentials:
-        st.checkbox(item, value=False)
+        st.checkbox(item)
 
-    st.markdown("### 👕 Clothing & Gear")
-    for item in clothing:
-        st.checkbox(item, value=False)
+    if clothing:
+        st.subheader("Clothing")
+        for item in clothing:
+            st.checkbox(item)
 
     if gear:
-        st.markdown(f"### 🎒 {trip_type} Gear")
+        st.subheader(f"{trip_type} Gear")
         for item in gear:
-            st.checkbox(item, value=False)
+            st.checkbox(item)
 
-    st.markdown("### 📆 Per-Day Clothing")
+    st.subheader("Per-Day Items")
     for item in per_day:
-        st.checkbox(item, value=False)
+        st.checkbox(item)
 
-    st.markdown("---")
-    st.info("💡 Tip: Roll your clothes to save space and avoid wrinkles.")
+    st.divider()
+    st.info("Tip: Roll clothes to save space and avoid wrinkles.")

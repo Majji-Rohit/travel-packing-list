@@ -31,7 +31,7 @@ pip install -r requirements.txt
 3. **Run the app**
 
 ```bash
-streamlit run travel_packing_streamlit.py
+streamlit run app.py
 ```
 
 4. **Use it in your browser** (opens at http://localhost:8501)

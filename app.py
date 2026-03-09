@@ -54,7 +54,7 @@ def generate_packing_list(days, weather, trip_type):
 # UI
 # ---------------------------
 st.title("🧳 Travel Packing List Generator")
-st.write("Enter trip details to generate your packing list.")
+st.write("Enter your trip details to generate a personalized packing checklist.")
 
 with st.form("trip_form"):
     destination = st.text_input("Destination")
@@ -85,7 +85,6 @@ if submitted:
             "Daily Clothing": per_day
         }
 
-        # Initialize checkbox states
         st.session_state.checked_state = {}
 
         for section in st.session_state.sections.values():
@@ -96,44 +95,47 @@ if submitted:
 
 
 # ---------------------------
+# Select All Toggle
+# ---------------------------
+def toggle_select_all():
+    for item in st.session_state.checked_state:
+        st.session_state.checked_state[item] = st.session_state.select_all
+
+
+# ---------------------------
 # Display Packing List
 # ---------------------------
 if "generated" in st.session_state:
 
     st.success(f"Packing list for {st.session_state.destination}")
 
-    # Select / Deselect All
-    select_all = st.checkbox("Select / Deselect All Items", value=st.session_state.select_all)
-
-    if select_all != st.session_state.select_all:
-        st.session_state.select_all = select_all
-
-        for item in st.session_state.checked_state:
-            st.session_state.checked_state[item] = select_all
+    st.checkbox(
+        "Select All",
+        key="select_all",
+        on_change=toggle_select_all
+    )
 
     st.write("## Packing Checklist")
 
-    # Show sections
     for section_name, items in st.session_state.sections.items():
 
         if items:
             st.subheader(section_name)
 
             for item in items:
+
                 st.session_state.checked_state[item] = st.checkbox(
                     item,
                     value=st.session_state.checked_state[item],
                     key=item
                 )
 
-    # Selected items
     selected_items = [
         item for item, checked in st.session_state.checked_state.items() if checked
     ]
 
     st.write(f"Total Selected Items: {len(selected_items)}")
 
-    # Download selected items
     if selected_items:
 
         numbered_items = "\n".join(

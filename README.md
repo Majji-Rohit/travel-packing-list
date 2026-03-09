@@ -11,6 +11,10 @@ Users can review suggested items, uncheck items they don't need, and download th
 
 Try the application instantly without installing anything.
 
+# 📸 Application Preview
+
+![Travel Packing List App](UI Screenshot.png)
+
 🌐 **Live Website:**
 https://travel-packing-list.onrender.com/
 

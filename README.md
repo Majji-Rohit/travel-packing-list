@@ -13,7 +13,7 @@ Try the application instantly without installing anything.
 
 # 📸 Application Preview
 
-![Travel Packing List App](UI Screenshot.png)
+![Travel Packing List App](screenshot.png)
 
 🌐 **Live Website:**
 https://travel-packing-list.onrender.com/

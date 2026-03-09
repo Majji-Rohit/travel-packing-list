@@ -65,62 +65,60 @@ with st.form("trip_form"):
 
 
 # ---------------------------
-# Display Packing List
+# Generate List Once
 # ---------------------------
 if submitted:
 
     if destination.strip() == "":
         st.warning("Please enter destination.")
     else:
-        st.success(f"Packing list for {destination}")
+        st.session_state.generated = True
+        st.session_state.destination = destination
+        st.session_state.packing_list = generate_packing_list(days, weather, trip_type)
 
-        packing_items = generate_packing_list(days, weather, trip_type)
+        # Initialize checked state
+        st.session_state.checked_state = {
+            item: True for item in st.session_state.packing_list
+        }
 
-        # Initialize session state
-        if "packing_list" not in st.session_state:
-            st.session_state.packing_list = packing_items
 
-        if "checked_state" not in st.session_state:
-            st.session_state.checked_state = {
-                item: True for item in packing_items
-            }
+# ---------------------------
+# Display Packing List
+# ---------------------------
+if "generated" in st.session_state:
 
-        # SELECT ALL
-        select_all = st.checkbox("Select All", value=True)
+    st.success(f"Packing list for {st.session_state.destination}")
 
-        if select_all:
-            for item in st.session_state.checked_state:
-                st.session_state.checked_state[item] = True
-        else:
-            for item in st.session_state.checked_state:
-                st.session_state.checked_state[item] = False
+    # Select All Toggle
+    select_all = st.checkbox("Select All", value=True)
 
-        st.write("### Your Packing List")
+    if select_all:
+        for item in st.session_state.checked_state:
+            st.session_state.checked_state[item] = True
 
-        # Display checkboxes
-        for item in st.session_state.packing_list:
-            st.session_state.checked_state[item] = st.checkbox(
-                item,
-                value=st.session_state.checked_state[item],
-                key=item
-            )
+    st.write("### Your Packing List")
 
-        # Collect selected items
-        selected_items = [
-            item
-            for item, checked in st.session_state.checked_state.items()
-            if checked
-        ]
+    for item in st.session_state.packing_list:
+        st.session_state.checked_state[item] = st.checkbox(
+            item,
+            value=st.session_state.checked_state[item],
+            key=item
+        )
 
-        st.write(f"Total Selected Items: {len(selected_items)}")
+    # Selected items
+    selected_items = [
+        item for item, checked in st.session_state.checked_state.items() if checked
+    ]
 
-        # Download selected items only
-        if selected_items:
-            file_content = "\n".join(selected_items)
+    st.write(f"Total Selected Items: {len(selected_items)}")
 
-            st.download_button(
-                label="Download",
-                data=file_content,
-                file_name="packing_list.txt",
-                mime="text/plain"
-            )
+    # Download selected items
+    if selected_items:
+        file_content = "\n".join(selected_items)
+
+        st.download_button(
+            label="Download",
+            data=file_content,
+            file_name="packing_list.txt",
+            mime="text/plain"
+        )

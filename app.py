@@ -9,10 +9,13 @@ def generate_packing_list(days, weather, trip_type):
 
     essentials = [
         "Passport / ID",
+        "Travel Tickets",
         "Wallet",
         "Phone",
         "Phone Charger",
+        "Charging Cable",
         "Power Bank",
+        "Earphones",
         "Toothbrush",
         "Toothpaste",
         "Shampoo",
@@ -21,10 +24,17 @@ def generate_packing_list(days, weather, trip_type):
         "Comb",
         "Sunscreen",
         "Medications",
-        "Travel Tickets"
+        "Hand Sanitizer",
+        "Wet Wipes",
+        "Reusable Water Bottle",
+        "Travel Adapter",
+        "Small First Aid Kit"
     ]
 
-    clothing = []
+    clothing = [
+        "Comfortable Shoes"
+    ]
+
     if weather == "Cold":
         clothing += ["Jacket", "Sweater", "Gloves", "Woolen Socks", "Thermals"]
     elif weather == "Hot":
@@ -33,12 +43,22 @@ def generate_packing_list(days, weather, trip_type):
         clothing += ["Raincoat", "Umbrella", "Waterproof Shoes"]
 
     gear = []
+
     if trip_type == "Business":
         gear += ["Formal Shirt", "Laptop", "Notepad", "Business Documents"]
+
     elif trip_type == "Vacation":
         gear += ["Camera", "Headphones", "Book", "Snacks"]
+
     elif trip_type == "Adventure":
-        gear += ["Hiking Boots", "First Aid Kit", "Torch", "Water Bottle"]
+        gear += [
+            "Hiking Boots",
+            "Backpack",
+            "First Aid Kit",
+            "Torch",
+            "Water Bottle",
+            "Energy Bars"
+        ]
 
     per_day = [
         f"Underwear x {days}",
@@ -91,16 +111,6 @@ if submitted:
             for item in section:
                 st.session_state.checked_state[item] = True
 
-        st.session_state.select_all = True
-
-
-# ---------------------------
-# Select All Toggle
-# ---------------------------
-def toggle_select_all():
-    for item in st.session_state.checked_state:
-        st.session_state.checked_state[item] = st.session_state.select_all
-
 
 # ---------------------------
 # Display Packing List
@@ -108,12 +118,6 @@ def toggle_select_all():
 if "generated" in st.session_state:
 
     st.success(f"Packing list for {st.session_state.destination}")
-
-    st.checkbox(
-        "Select All",
-        key="select_all",
-        on_change=toggle_select_all
-    )
 
     st.write("## Packing Checklist")
 

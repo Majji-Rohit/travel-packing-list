@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="Travel Packing List Generator", page_icon="🧳")
 
 # ---------------------------
-# Packing Logic Function
+# Packing Logic
 # ---------------------------
 def generate_packing_list(days, weather, trip_type):
 
@@ -47,14 +47,14 @@ def generate_packing_list(days, weather, trip_type):
         f"Pants x {days}"
     ]
 
-    return essentials + clothing + gear + per_day
+    return essentials, clothing, gear, per_day
 
 
 # ---------------------------
 # UI
 # ---------------------------
 st.title("🧳 Travel Packing List Generator")
-st.write("Fill the details and generate your customized list.")
+st.write("Enter trip details to generate your packing list.")
 
 with st.form("trip_form"):
     destination = st.text_input("Destination")
@@ -65,21 +65,34 @@ with st.form("trip_form"):
 
 
 # ---------------------------
-# Generate List Once
+# Generate Packing List
 # ---------------------------
 if submitted:
 
     if destination.strip() == "":
         st.warning("Please enter destination.")
     else:
+
         st.session_state.generated = True
         st.session_state.destination = destination
-        st.session_state.packing_list = generate_packing_list(days, weather, trip_type)
 
-        # Initialize checked state
-        st.session_state.checked_state = {
-            item: True for item in st.session_state.packing_list
+        essentials, clothing, gear, per_day = generate_packing_list(days, weather, trip_type)
+
+        st.session_state.sections = {
+            "Essentials": essentials,
+            "Clothing": clothing,
+            "Trip Gear": gear,
+            "Daily Clothing": per_day
         }
+
+        # Initialize checkbox states
+        st.session_state.checked_state = {}
+
+        for section in st.session_state.sections.values():
+            for item in section:
+                st.session_state.checked_state[item] = True
+
+        st.session_state.select_all = True
 
 
 # ---------------------------
@@ -89,21 +102,29 @@ if "generated" in st.session_state:
 
     st.success(f"Packing list for {st.session_state.destination}")
 
-    # Select All Toggle
-    select_all = st.checkbox("Select All", value=True)
+    # Select / Deselect All
+    select_all = st.checkbox("Select / Deselect All Items", value=st.session_state.select_all)
 
-    if select_all:
+    if select_all != st.session_state.select_all:
+        st.session_state.select_all = select_all
+
         for item in st.session_state.checked_state:
-            st.session_state.checked_state[item] = True
+            st.session_state.checked_state[item] = select_all
 
-    st.write("### Your Packing List")
+    st.write("## Packing Checklist")
 
-    for item in st.session_state.packing_list:
-        st.session_state.checked_state[item] = st.checkbox(
-            item,
-            value=st.session_state.checked_state[item],
-            key=item
-        )
+    # Show sections
+    for section_name, items in st.session_state.sections.items():
+
+        if items:
+            st.subheader(section_name)
+
+            for item in items:
+                st.session_state.checked_state[item] = st.checkbox(
+                    item,
+                    value=st.session_state.checked_state[item],
+                    key=item
+                )
 
     # Selected items
     selected_items = [
@@ -114,10 +135,19 @@ if "generated" in st.session_state:
 
     # Download selected items
     if selected_items:
-        file_content = "\n".join(selected_items)
+
+        numbered_items = "\n".join(
+            [f"{i+1}. {item}" for i, item in enumerate(selected_items)]
+        )
+
+        file_content = f"""Packing List
+-----------------------
+
+{numbered_items}
+"""
 
         st.download_button(
-            label="Download",
+            label="Download Packing List",
             data=file_content,
             file_name="packing_list.txt",
             mime="text/plain"

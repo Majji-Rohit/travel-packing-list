@@ -141,11 +141,3 @@ travel-packing-list/
 # 📃 License
 
 Free to use for **personal and educational purposes**.
-
----
-
-# 👨‍💻 Author
-
-**Rohit Majji**
-Computer Science Undergraduate
-VIT-AP University
